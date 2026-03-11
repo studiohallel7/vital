@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build Expo Android APK
+    name: Build Native Android APK
     runs-on: ubuntu-latest
     steps:
       - name: 🏗 Setup repo
@@ -18,25 +18,24 @@ jobs:
         with:
           node-version: 20
 
-      - name: 🏗 Setup EAS
-        uses: expo/expo-github-action@v8
+      - name: 🏗 Setup Java
+        uses: actions/setup-java@v3
         with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          distribution: 'zulu'
+          java-version: '17'
 
       - name: 📦 Install dependencies
         run: npm ci
 
-      - name: 🚀 Build Android
-        run: eas build --platform android --profile preview --non-interactive --local
-        # Note: --local tries to build on Github Actions directly. 
-        # If omitting --local, it uses Expo servers (requires EXPO_TOKEN).
-        # We'll use local build to ensure it generates an artifact in the workflow.
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: 🚀 Make Gradlew executable
+        run: chmod +x android/gradlew
+
+      - name: 🚀 Build Android Release APK
+        working-directory: ./android
+        run: ./gradlew assembleRelease --no-daemon
 
       - name: 📂 Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: hallel-mobile-apk
-          path: build/*.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
