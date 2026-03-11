@@ -27,6 +27,9 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
+      - name: ⚙️ Generate Android Project (Prebuild)
+        run: npx expo prebuild --platform android
+
       - name: 🚀 Make Gradlew executable
         run: chmod +x android/gradlew
 
