@@ -5,6 +5,9 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     name: Build Native Android APK
@@ -35,10 +38,11 @@ jobs:
 
       - name: 🚀 Build Android Debug APK
         working-directory: ./android
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon --info --stacktrace
 
       - name: 📂 Upload APK
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: hallel-mobile-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
